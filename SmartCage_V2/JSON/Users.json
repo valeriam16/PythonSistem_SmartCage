@@ -1,0 +1,23 @@
+[
+  {
+    "ID": 1,
+    "Name": "Valeria Morales",
+    "User": "Vale16",
+    "Email": "vale@gmail.com",
+    "Password": "vale1234"
+  },
+  {
+    "ID": 2,
+    "Name": "Fer Moreno",
+    "User": "evelyn1",
+    "Email": "eve@gmail.com",
+    "Password": "eve1234"
+  },
+  {
+    "ID": 3,
+    "Name": "Jonathan Reyes",
+    "User": "Jona21",
+    "Email": "jona@gmail.com",
+    "Password": "jona1234"
+  }
+]
