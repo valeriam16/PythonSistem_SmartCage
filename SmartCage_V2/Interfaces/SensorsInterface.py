@@ -53,12 +53,12 @@ class SensorsInterface:
         if sensors is None:
             sensors = self.instanciaSensors
 
-        sensorID = input("ID del sensor: ")
+        ID = input("ID del sensor: ")
         type = input("Tipo de sensor: ")
         name = input("Nombre del sensor: ")
         unit = input("Unidad en que tomará las medidas el sensor: ")
         description = input("Descripción de lo que se monitoreará con el sensor: ")
-        sensor = Sensors(sensorID, type, name, unit, description)
+        sensor = Sensors(ID, type, name, unit, description)
         res = sensors.create(sensor)
 
         if res == 1:
@@ -105,21 +105,21 @@ class SensorsInterface:
                 print(f"{sensorAActualizar}")
 
                 # Solicitar los nuevos datos para el sensor
-                sensorID = input("Nuevo ID del sensor (deje vacío para mantener el actual): ")
+                ID = input("Nuevo ID del sensor (deje vacío para mantener el actual): ")
                 type = input("Nuevo tipo de sensor (deje vacío para mantener el actual): ")
                 name = input("Nuevo nombre del sensor (deje vacío para mantener el actual): ")
                 unit = input("Nueva unidad del sensor (deje vacío para mantener la actual): ")
                 description = input("Nueva descripción del sensor (deje vacío para mantener la actual): ")
 
                 # Verificar si se ingresaron nuevos datos para el sensor
-                if sensorID or type or name or unit or description:
+                if ID or type or name or unit or description:
                     # Si se proporcionan nuevos datos, crear un objeto Funciones con ellos
                     sensor = Sensors(
-                        sensorID or sensorAActualizar.sensorID,
-                        type or sensorAActualizar.type,
-                        name or sensorAActualizar.name,
-                        unit or sensorAActualizar.unit,
-                        description or sensorAActualizar.description
+                        ID or sensorAActualizar.ID,
+                        type or sensorAActualizar.Type,
+                        name or sensorAActualizar.Name,
+                        unit or sensorAActualizar.Unit,
+                        description or sensorAActualizar.Description
                     )
 
                     # Intentar actualizar el sensor con los nuevos datos

@@ -1,16 +1,23 @@
 [
   {
-    "SensorID": "1",
+    "ID": "1",
     "Type": "Temperatura",
     "Name": "TM",
     "Unit": "°C",
     "Description": "blablabla"
   },
   {
-    "SensorID": "2",
+    "ID": "2",
     "Type": "Ultrasónico",
     "Name": "US",
     "Unit": "cm",
     "Description": "Se decidirá si cerrar o abrir la puerta de la jaula."
+  },
+  {
+    "ID": "3",
+    "Type": "Sonido",
+    "Name": "SN",
+    "Unit": "booleano",
+    "Description": "Detectará ruidos amenazantes para la mascota."
   }
 ]

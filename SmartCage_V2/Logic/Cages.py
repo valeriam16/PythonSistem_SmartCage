@@ -1,12 +1,12 @@
 import json
-from Lista import Lista
+from Logic.Lista import Lista
 
 
 class Cages(Lista):
-    def __init__(self, CageID=None):
+    def __init__(self, ID=None):
         super().__init__()
-        if CageID is not None:
-            self.CageID = CageID
+        if ID is not None:
+            self.ID = ID
             self.lista = []
 
     def diccionario(self):
@@ -18,15 +18,15 @@ class Cages(Lista):
             return datos
         else:
             return {
-                'CageID': self.CageID
+                'ID': self.ID
             }
 
     def guardar(self, diccionario):
-        with open('Cages.json', 'w', encoding='utf-8') as cages_json:
+        with open('../JSON/Cages.json', 'w', encoding='utf-8') as cages_json:
             json.dump(diccionario, cages_json, indent=2, ensure_ascii=False)
 
     def recuperarDatos(self):
-        with open('Cages.json', 'r', encoding='utf-8') as cages_json:
+        with open('../JSON/Cages.json', 'r', encoding='utf-8') as cages_json:
             datos = json.load(cages_json)
             return datos
 
@@ -34,7 +34,7 @@ class Cages(Lista):
         self.lista = []
         for cage_data in datos:
             cage = Cages(
-                cage_data['CageID']
+                cage_data['ID']
             )
             self.create(cage)
         return self
@@ -43,7 +43,7 @@ class Cages(Lista):
         self.convertirAObjeto(self.recuperarDatos())
 
     def encabezados(self):
-        return f"{'CageID'.rjust(1)}"
+        return f"{'ID'.rjust(1)}"
 
     def __str__(self):
-        return f'{str(self.CageID).rjust(20)}'
+        return f'{str(self.ID).rjust(1)}'

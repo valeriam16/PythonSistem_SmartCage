@@ -16,7 +16,8 @@ class CagesInterface:
             if os.path.exists("../JSON/Cages.json") and os.path.getsize("../JSON/Cages.json") > 0:
                 self.dataFileCage.cargar() # Aquí guardamos los datos del JSON en la lista[]
             else:
-                print("No hay jaulas actualmente.")
+                pass
+                #print("No hay jaulas actualmente.")
 
             self.instancia = self.dataFileCage
             self.guardarInJson=False
@@ -27,7 +28,8 @@ class CagesInterface:
             if os.path.exists("../JSON/Cages.json") and os.path.getsize("../JSON/Cages.json") > 0:
                 self.instanciaCage.cargar()
             else:
-                print("No hay jaulas actualmente.")
+                pass
+                #print("No hay jaulas actualmente.")
             self.instancia = self.instanciaCage
 
             self.guardarInJson=True
@@ -53,8 +55,8 @@ class CagesInterface:
         if cages is None:
             cages = self.instanciaCage
 
-        cageID = input("ID de la jaula: ")
-        cage = Cages(cageID)
+        ID = input("ID de la jaula: ")
+        cage = Cages(ID)
         res = cages.create(cage)
 
         if res == 1:
@@ -143,6 +145,5 @@ class CagesInterface:
 
 
 if __name__ == "__main__":
-    interfazJaulasInstancia = CagesInterface() # Forma 1
-    # interfazFuncionesInstancia = InterfazFunciones_V2(Funciones()) #Forma 2 (Se va a comportar como una lista)
-    interfazJaulasInstancia.interfaz()
+    instancia = CagesInterface()
+    instancia.interfaz()
