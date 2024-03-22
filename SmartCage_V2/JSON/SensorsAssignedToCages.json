@@ -2,8 +2,15 @@
   {
     "ID": 3,
     "SensorID": 3,
-    "NumberSensor": 3,
-    "UserID": 3,
-    "CageID": 3
+    "NumberSensor": 1,
+    "UserID": 7,
+    "CageID": 9
+  },
+  {
+    "ID": 5,
+    "SensorID": 5,
+    "NumberSensor": 5,
+    "UserID": 6,
+    "CageID": 5
   }
 ]

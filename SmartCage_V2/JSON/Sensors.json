@@ -19,5 +19,12 @@
     "Name": "SN",
     "Unit": "booleano",
     "Description": "Detectará ruidos amenazantes para la mascota."
+  },
+  {
+    "ID": 5,
+    "Type": "Agua",
+    "Name": "AG",
+    "Unit": "%",
+    "Description": "Esta es una actualización"
   }
 ]

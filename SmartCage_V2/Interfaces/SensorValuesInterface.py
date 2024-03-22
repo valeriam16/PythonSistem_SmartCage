@@ -36,11 +36,15 @@ class SensorValuesInterface:
             self.instancia = self.instanciaSensorValues
             self.guardarInJson=True
 
+        # Inicializar un conjunto para almacenar los ID utilizados
+        self.used_ids = set(cage.ID for cage in self.instanciaSensorValues.lista)
+
     def createSensorValue(self, sensorValues=None):
         if sensorValues is None:
             sensorValues = self.instanciaSensorValues
 
-        ID = int(input("ID del valor tomado: "))
+        # Obtener el siguiente ID disponible
+        ID = self.get_next_available_id()
 
         # Obtener el objeto de SENSOR_CAGE y usar su ID
         sensorAssignedInstance = SensorsAssignedToCagesInterface(SensorsAssignedToCages())
@@ -54,6 +58,8 @@ class SensorValuesInterface:
 
         if res == 1:
             print("Se ha guardado el valor correctamente.")
+            # Agregar el nuevo ID al conjunto de ID utilizados
+            self.used_ids.add(ID)
             self.guardarEnJSON()
             # SE GUARDA EN LA COLECCIÓN CORRESPONDIENTE
             #self.mongodb_connection.insert_document(obj.diccionario())
@@ -61,6 +67,11 @@ class SensorValuesInterface:
         else:
             print("Hubo un error al guardar el valor.")
         return SensorValue
+
+    def get_next_available_id(self):
+        # Encontrar el siguiente ID disponible después del último ID utilizado
+        new_id = max(self.used_ids, default=0) + 1
+        return new_id
 
     def readSensorValue(self, sensorValues=None):
         if sensorValues is None:
@@ -92,8 +103,6 @@ class SensorValuesInterface:
                 print(f"{valorAActualizar}")
 
                 # Solicitar los nuevos datos para el valor
-                ID = input("Nuevo ID del valor (deje vacío para mantener el actual): ")
-                # SensorID = input("Nuevo ID del sensor que tomó el valor (deje vacío para mantener el actual): ")
 
                 # Preguntar al usuario si desea mantener el SensorAssignedToCageID actual o actualizarlo
                 respuesta = input("¿Desea mantener el SensorAssignedToCageID actual? (Sí/No): ").lower()
@@ -108,10 +117,10 @@ class SensorValuesInterface:
                 Value = input("Nuevo valor que tomó el sensor (deje vacío para mantener el actual): ")
 
                 # Verificar si se ingresaron nuevos datos para el valor
-                if ID or SensorAssignedToCageID or Value:
+                if SensorAssignedToCageID or Value:
                     # Si se proporcionan nuevos datos, crear un objeto UserCages con ellos
                     SensorValue = SensorValues(
-                        ID or valorAActualizar.ID,
+                        valorAActualizar.ID,
                         SensorAssignedToCageID,
                         Value or valorAActualizar.Value
                     )

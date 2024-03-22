@@ -21,7 +21,8 @@ class UserCagesInterface:
             if os.path.exists("../JSON/UsersCages.json") and os.path.getsize("../JSON/UsersCages.json") > 0:
                 self.dataFileUserCages.cargar() # Aquí guardamos los datos del JSON en la lista[]
             else:
-                print("No hay usuarios asignados a jaulas actualmente.")
+                pass
+                # print("No hay usuarios asignados a jaulas actualmente.")
 
             self.instancia = self.dataFileUserCages
             self.guardarInJson=False
@@ -32,10 +33,14 @@ class UserCagesInterface:
             if os.path.exists("../JSON/UsersCages.json") and os.path.getsize("../JSON/UsersCages.json") > 0:
                 self.instanciaUserCages.cargar()
             else:
-                print("No hay usuarios asignados a jaulas actualmente.")
-            self.instancia = self.instanciaUserCages
+                pass
+                # print("No hay usuarios asignados a jaulas actualmente.")
 
+            self.instancia = self.instanciaUserCages
             self.guardarInJson=True
+
+        # Inicializar un conjunto para almacenar los ID utilizados
+        self.used_ids = set(cage.ID for cage in self.instanciaUserCages.lista)
 
     def seleccionarComoAgregar(self, userAssigment=None):
         self.readUserAssignment(self.dataFileUserCages)
@@ -58,8 +63,9 @@ class UserCagesInterface:
         if userAssigment is None:
             userAssigment = self.instanciaUserCages
 
-        print("------------- Asignando una jaula a un usuario -------------")
-        ID = int(input("ID de asignación para jaula con usuario: "))
+        # print("------------- Asignando una jaula a un usuario -------------")
+        # Obtener el siguiente ID disponible
+        ID = self.get_next_available_id()
 
         # Obtener el objeto de USUARIO y usar su ID
         usersInstance = UsersInterface(Users())
@@ -76,6 +82,8 @@ class UserCagesInterface:
 
         if res == 1:
             print("Se ha creado la asignación de una jaula a un usuario correctamente.")
+            # Agregar el nuevo ID al conjunto de ID utilizados
+            self.used_ids.add(ID)
             # Este if sirve para cuando se está creando algo desde una interfaz externa
             if self.guardarInJson == False:
                 self.instancia.create(UserCage)
@@ -83,6 +91,11 @@ class UserCagesInterface:
         else:
             print("Hubo un error al crear la asignación de una jaula a un usuario.")
         return UserCage
+
+    def get_next_available_id(self):
+        # Encontrar el siguiente ID disponible después del último ID utilizado
+        new_id = max(self.used_ids, default=0) + 1
+        return new_id
 
     def readUserAssignment(self, userAssigment=None):
         if userAssigment is None:
@@ -182,7 +195,7 @@ class UserCagesInterface:
                 print(f"{asignacionAActualizar}")
 
                 # Solicitar los nuevos datos para la asignación
-                ID = input("Nuevo ID de la asignación (deje vacío para mantener el actual): ")
+                # ID = input("Nuevo ID de la asignación (deje vacío para mantener el actual): ")
 
                 # Preguntar al usuario si desea mantener el UserID actual o actualizarlo
                 respuesta = input("¿Desea mantener el UserID actual? (Sí/No): ").lower()
@@ -205,10 +218,10 @@ class UserCagesInterface:
                     CageID = interfazCages.seleccionarActualizacion(asignacionAActualizar.CageID)
 
                 # Verificar si se ingresaron nuevos datos para la asignación
-                if ID or CageID or UserID:
+                if CageID or UserID:
                     # Si se proporcionan nuevos datos, crear un objeto UsersCages con ellos
                     UserCage = UsersCages(
-                        ID or asignacionAActualizar.ID,
+                        asignacionAActualizar.ID,
                         UserID,
                         CageID
                     )
@@ -231,7 +244,6 @@ class UserCagesInterface:
                     print("No se proporcionaron nuevos datos. La asignación permanece sin cambios.")
             else:
                 print("ID de la asignación no válido.")
-
 
     def deleteUserAssigment(self, userAssigment=None):
         if userAssigment is None:

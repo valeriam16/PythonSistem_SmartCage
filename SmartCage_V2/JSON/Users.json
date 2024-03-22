@@ -29,9 +29,30 @@
   },
   {
     "ID": 5,
-    "Name": "Cesar Chavez",
+    "Name": "Cesar Morales",
     "User": "cesar",
     "Email": "cesar@gmail.com",
-    "Password": "cesar1234"
+    "Password": "cesar123"
+  },
+  {
+    "ID": 6,
+    "Name": "Yaretzi Rodriguez",
+    "User": "yaretzi",
+    "Email": "yaretzi@gmail.com",
+    "Password": "yaretzi1234"
+  },
+  {
+    "ID": 8,
+    "Name": "Christian Jimenez",
+    "User": "cris",
+    "Email": "cris@gmail.com",
+    "Password": "cris1234"
+  },
+  {
+    "ID": 9,
+    "Name": "Jared Lira",
+    "User": "jared",
+    "Email": "jared@gmail.com",
+    "Password": "jared1234"
   }
 ]

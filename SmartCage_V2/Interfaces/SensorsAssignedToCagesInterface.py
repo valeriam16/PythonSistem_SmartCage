@@ -29,7 +29,7 @@ class SensorsAssignedToCagesInterface:
                 # print("No hay sensores asignados actualmente.")
 
             self.instancia = self.dataFileSensorsAssigned
-            self.guardarInJson=False
+            self.guardarInJson = False
         else:
             # CREA NUEVA ASIGNACIÓN, NO SE LE MANDA UNA INSTANCIA
             self.instanciaSensorsAssigned = SensorsAssignedToCages()
@@ -41,7 +41,10 @@ class SensorsAssignedToCagesInterface:
                 # print("No hay sensores asignados actualmente.")
 
             self.instancia = self.instanciaSensorsAssigned
-            self.guardarInJson=True
+            self.guardarInJson = True
+
+        # Inicializar un conjunto para almacenar los ID utilizados
+        self.used_ids = set(cage.ID for cage in self.instanciaSensorsAssigned.lista)
 
     def seleccionarComoAgregar_PASADO(self, assigment=None):
         self.readAssigment(self.dataFileSensorsAssigned)
@@ -90,8 +93,9 @@ class SensorsAssignedToCagesInterface:
         if assigment is None:
             assigment = self.instanciaSensorsAssigned
 
-        print("------------- Asignando sensores a una jaula -------------")
-        ID = int(input("ID de asignación para sensor en jaula: "))
+        # print("------------- Asignando sensores a una jaula -------------")
+        # Obtener el siguiente ID disponible
+        ID = self.get_next_available_id()
 
         # Obtener el objeto de SENSOR y usar su ID
         sensorInstance = SensorsInterface(Sensors())
@@ -115,6 +119,9 @@ class SensorsAssignedToCagesInterface:
 
         if res == 1:
             print("Se ha creado la asignación del sensor a la jaula correctamente.")
+            # Agregar el nuevo ID al conjunto de ID utilizados
+            self.used_ids.add(ID)
+
             # Este if sirve para cuando se está creando algo desde una interfaz externa
             if self.guardarInJson == False:
                 self.instancia.create(SensorAssigned)
@@ -122,6 +129,11 @@ class SensorsAssignedToCagesInterface:
         else:
             print("Hubo un error al crear la asignación del sensor a la jaula.")
         return SensorAssigned
+
+    def get_next_available_id(self):
+        # Encontrar el siguiente ID disponible después del último ID utilizado
+        new_id = max(self.used_ids, default=0) + 1
+        return new_id
 
     def readAssigment(self, assigment=None):
         if assigment is None:
@@ -151,10 +163,6 @@ class SensorsAssignedToCagesInterface:
                 print(f"\nDatos actuales de la asignación a actualizar:")
                 print(assigment.encabezados())
                 print(f"{asignacionAActualizar}")
-
-                # Solicitar los nuevos datos para el sensor
-                ID = input("Nuevo ID de la asignación (deje vacío para mantener el actual): ")
-                # SensorID = input("Nuevo ID del sensor (deje vacío para mantener el actual): ")
 
                 # Preguntar al usuario si desea mantener el SensorID actual o actualizarlo
                 respuesta = input("¿Desea mantener el SensorID actual? (Sí/No): ").lower()
@@ -192,10 +200,10 @@ class SensorsAssignedToCagesInterface:
                     UserID = interfazUsers.seleccionarActualizacion(asignacionAActualizar.UserID)
 
                 # Verificar si se ingresaron nuevos datos para la asignación
-                if ID or SensorID or NumberSensor or CageID or UserID:
+                if SensorID or NumberSensor or CageID or UserID:
                     # Si se proporcionan nuevos datos, crear un objeto SensorsAssignedToCages con ellos
                     SensorAssigned = SensorsAssignedToCages(
-                        ID or asignacionAActualizar.ID,
+                        asignacionAActualizar.ID,
                         SensorID,
                         NumberSensor or asignacionAActualizar.NumberSensor,
                         CageID,

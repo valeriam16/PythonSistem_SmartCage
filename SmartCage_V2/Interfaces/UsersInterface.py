@@ -34,6 +34,9 @@ class UsersInterface:
             self.instancia = self.instanciaUser
             self.guardarInJson=True
 
+        # Inicializar un conjunto para almacenar los ID utilizados
+        self.used_ids = set(cage.ID for cage in self.instanciaUser.lista)
+
     def seleccionarComoAgregar_PASADO(self, users=None):
         self.readUsers(self.dataFileUser)
         id_user = int(input("ID del usuario que desea asignar (-1 para crear uno nuevo): "))
@@ -81,7 +84,8 @@ class UsersInterface:
         if users is None:
             users = self.instanciaUser
 
-        userID = int(input("ID del usuario: "))
+        # Obtener el siguiente ID disponible
+        userID = self.get_next_available_id()
         name = input("Nombre: ")
         user = input("User: ")
         email = input("Email: ")
@@ -91,6 +95,8 @@ class UsersInterface:
 
         if res == 1:
             print("Se ha creado el usuario correctamente.")
+            # Agregar el nuevo ID al conjunto de ID utilizados
+            self.used_ids.add(userID)
             # Este if sirve para cuando se está creando algo desde una interfaz externa
             if self.guardarInJson == False:
                 self.instancia.create(user)
@@ -101,6 +107,11 @@ class UsersInterface:
         else:
             print("Hubo un error al crear el usuario.")
         return user
+
+    def get_next_available_id(self):
+        # Encontrar el siguiente ID disponible después del último ID utilizado
+        new_id = max(self.used_ids, default=0) + 1
+        return new_id
 
     def readUsers(self, users=None):
         if users is None:
@@ -132,17 +143,17 @@ class UsersInterface:
                 print(f"{usuarioAActualizar}")
 
                 # Solicitar los nuevos datos para el usuario
-                userID = input("Nuevo ID del usuario (deje vacío para mantener el actual): ")
+                # userID = input("Nuevo ID del usuario (deje vacío para mantener el actual): ")
                 name = input("Nuevo nombre (deje vacío para mantener el actual): ")
                 user = input("Nuevo user (deje vacío para mantener el actual): ")
                 email = input("Nuevo email (deje vacío para mantener el actual): ")
                 password = input("Nueva contraseña (deje vacío para mantener la actual): ")
 
                 # Verificar si se ingresaron nuevos datos para el sensor
-                if userID or name or user or email or password:
+                if name or user or email or password:
                     # Si se proporcionan nuevos datos, crear un objeto Users con ellos
                     user = Users(
-                        userID or usuarioAActualizar.ID,
+                        usuarioAActualizar.ID,
                         name or usuarioAActualizar.Name,
                         user or usuarioAActualizar.User,
                         email or usuarioAActualizar.Email,

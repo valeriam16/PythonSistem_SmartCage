@@ -1,7 +1,12 @@
 [
   {
     "ID": 2,
+    "UserID": 2,
+    "CageID": 2
+  },
+  {
+    "ID": 3,
     "UserID": 3,
-    "CageID": 4
+    "CageID": 3
   }
 ]

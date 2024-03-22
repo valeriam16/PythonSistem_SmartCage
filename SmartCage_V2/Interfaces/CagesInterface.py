@@ -30,9 +30,12 @@ class CagesInterface:
             else:
                 pass
                 #print("No hay jaulas actualmente.")
-            self.instancia = self.instanciaCage
 
+            self.instancia = self.instanciaCage
             self.guardarInJson=True
+
+        # Inicializar un conjunto para almacenar los ID utilizados
+        self.used_ids = set(cage.ID for cage in self.instanciaCage.lista)
 
     def seleccionarComoAgregar(self, cages=None):
         self.readCages(self.dataFileCage)
@@ -65,12 +68,17 @@ class CagesInterface:
         if cages is None:
             cages = self.instanciaCage
 
-        ID = int(input("ID de la jaula: "))
+        # Obtener el siguiente ID disponible
+        ID = self.get_next_available_id()
+
+        # ID = int(input("ID de la jaula: "))
         cage = Cages(ID)
         res = cages.create(cage)
 
         if res == 1:
             print("Se ha creado la jaula correctamente.")
+            # Agregar el nuevo ID al conjunto de ID utilizados
+            self.used_ids.add(ID)
             # Este if sirve para cuando se está creando algo desde una interfaz externa
             if self.guardarInJson == False:
                 self.instancia.create(cage)
@@ -81,6 +89,11 @@ class CagesInterface:
         else:
             print("Hubo un error al crear la jaula.")
         return cage
+
+    def get_next_available_id(self):
+        # Encontrar el siguiente ID disponible después del último ID utilizado
+        new_id = max(self.used_ids, default=0) + 1
+        return new_id
 
     def readCages(self, cages=None):
         if cages is None:

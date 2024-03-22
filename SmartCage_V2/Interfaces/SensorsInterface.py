@@ -16,10 +16,11 @@ class SensorsInterface:
             if os.path.exists("../JSON/Sensors.json") and os.path.getsize("../JSON/Sensors.json") > 0:
                 self.dataFileSensors.cargar() # Aquí guardamos los datos del JSON en la lista[]
             else:
-                print("No hay sensores actualmente.")
+                pass
+                # print("No hay sensores actualmente.")
 
             self.instancia = self.dataFileSensors
-            self.guardarInJson=False
+            self.guardarInJson = False
         else:
             # CREA NUEVA FUNCIÓN, NO SE LE MANDA UNA INSTANCIA
             self.instanciaSensors = Sensors()
@@ -27,10 +28,14 @@ class SensorsInterface:
             if os.path.exists("../JSON/Sensors.json") and os.path.getsize("../JSON/Sensors.json") > 0:
                 self.instanciaSensors.cargar()
             else:
-                print("No hay sensores actualmente.")
-            self.instancia = self.instanciaSensors
+                pass
+                # print("No hay sensores actualmente.")
 
-            self.guardarInJson=True
+            self.instancia = self.instanciaSensors
+            self.guardarInJson = True
+
+            # Inicializar un conjunto para almacenar los ID utilizados
+            self.used_ids = set(cage.ID for cage in self.instanciaSensors.lista)
 
     def seleccionarComoAgregar_PASADO(self, sensors=None):
         self.readSensors(self.dataFileSensors)
@@ -79,7 +84,8 @@ class SensorsInterface:
         if sensors is None:
             sensors = self.instanciaSensors
 
-        ID = int(input("ID del sensor: "))
+        # Obtener el siguiente ID disponible
+        ID = self.get_next_available_id()
         type = input("Tipo de sensor: ")
         name = input("Nombre del sensor: ")
         unit = input("Unidad en que tomará las medidas el sensor: ")
@@ -89,6 +95,8 @@ class SensorsInterface:
 
         if res == 1:
             print("Se ha creado el sensor correctamente.")
+            # Agregar el nuevo ID al conjunto de ID utilizados
+            self.used_ids.add(ID)
             # Este if sirve para cuando se está creando algo desde una interfaz externa
             if self.guardarInJson == False:
                 self.instancia.create(sensor)
@@ -99,6 +107,11 @@ class SensorsInterface:
         else:
             print("Hubo un error al crear el sensor.")
         return sensor
+
+    def get_next_available_id(self):
+        # Encontrar el siguiente ID disponible después del último ID utilizado
+        new_id = max(self.used_ids, default=0) + 1
+        return new_id
 
     def readSensors(self, sensors=None):
         if sensors is None:
@@ -132,17 +145,17 @@ class SensorsInterface:
                 print(f"{sensorAActualizar}")
 
                 # Solicitar los nuevos datos para el sensor
-                ID = input("Nuevo ID del sensor (deje vacío para mantener el actual): ")
+                # ID = input("Nuevo ID del sensor (deje vacío para mantener el actual): ")
                 type = input("Nuevo tipo de sensor (deje vacío para mantener el actual): ")
                 name = input("Nuevo nombre del sensor (deje vacío para mantener el actual): ")
                 unit = input("Nueva unidad del sensor (deje vacío para mantener la actual): ")
                 description = input("Nueva descripción del sensor (deje vacío para mantener la actual): ")
 
                 # Verificar si se ingresaron nuevos datos para el sensor
-                if ID or type or name or unit or description:
+                if type or name or unit or description:
                     # Si se proporcionan nuevos datos, crear un objeto Funciones con ellos
                     sensor = Sensors(
-                        ID or sensorAActualizar.ID,
+                        sensorAActualizar.ID,
                         type or sensorAActualizar.Type,
                         name or sensorAActualizar.Name,
                         unit or sensorAActualizar.Unit,
@@ -230,6 +243,5 @@ class SensorsInterface:
 
 
 if __name__ == "__main__":
-    interfazSensoresInstancia = SensorsInterface() # Forma 1
-    # interfazFuncionesInstancia = InterfazFunciones_V2(Funciones()) #Forma 2 (Se va a comportar como una lista)
-    interfazSensoresInstancia.interfaz()
+    instancia = SensorsInterface()
+    instancia.interfaz()
