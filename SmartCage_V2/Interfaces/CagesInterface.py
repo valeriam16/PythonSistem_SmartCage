@@ -38,23 +38,24 @@ class CagesInterface:
         self.used_ids = set(cage.ID for cage in self.instanciaCage.lista)
 
     def seleccionarComoAgregar(self, cages=None):
-        self.readCages(self.dataFileCage)
-        id_cage = int(input("ID de la jaula que desea asignar (-1 para crear uno nuevo): "))
+        print("\n----------- Interfaz 'Cages' -----------\n")
 
-        if id_cage == -1:
-            # Crea una nueva jaula
-            new_cage = self.createCage(cages)
-            return new_cage  # Devuelve el objeto de jaula creado
-        else:
-            # Obtener la jaula seleccionado
-            jaula_asignada = self.dataFileCage.search(id_cage)
-            if jaula_asignada:
-                self.instanciaCage.create(jaula_asignada)
-                return jaula_asignada  # Devuelve el objeto de jaula encontrado
+        self.readCages(self.dataFileCage)
+        while True:
+            id_cage = int(input("ID de la jaula que desea asignar (-1 para crear uno nuevo): "))
+            if id_cage == -1:
+                # Crea una nueva jaula
+                new_cage = self.createCage(cages)
+                return new_cage  # Devuelve el objeto de jaula creado
             else:
-                print("ID de la jaula inválido.")
-                #self.seleccionarComoAgregar()
-                return None  # Devuelve None si no se encuentra la jaula
+                # Obtener la jaula seleccionado
+                jaula_asignada = self.dataFileCage.search(id_cage)
+                if jaula_asignada:
+                    self.instanciaCage.create(jaula_asignada)
+                    return jaula_asignada  # Devuelve el objeto de jaula encontrado
+                else:
+                    print("ID de la jaula inválido. Por favor, elija una opción válida.")
+                    continue
 
     def seleccionarActualizacion(self, current_cage_id):
         self.readCages()

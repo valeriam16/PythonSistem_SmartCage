@@ -37,40 +37,26 @@ class SensorsInterface:
             # Inicializar un conjunto para almacenar los ID utilizados
             self.used_ids = set(cage.ID for cage in self.instanciaSensors.lista)
 
-    def seleccionarComoAgregar_PASADO(self, sensors=None):
-        self.readSensors(self.dataFileSensors)
-        id_sensor = int(input("ID del sensor que desea seleccionar (-1 para crear uno nuevo): "))
-
-        if id_sensor == -1:
-            # Crea un nuevo sensor
-            self.createSensor(sensors)
-        else:
-            # Obtener el sensor seleccionado
-            sensor_asignado = self.dataFileSensors.search(id_sensor)
-            if sensor_asignado:
-                self.instanciaSensors.create(sensor_asignado)
-            else:
-                print("ID del sensor inválido.")
-
-        return self.instanciaSensors
-
     def seleccionarComoAgregar(self, sensors=None):
-        self.readSensors(self.dataFileSensors)
-        id_sensor = int(input("ID del sensor que desea asignar (-1 para crear uno nuevo): "))
+        print("\n----------- Interfaz 'Sensors' -----------\n")
 
-        if id_sensor == -1:
-            # Crea un nuevo sensor
-            new_sensor = self.createSensor(sensors)
-            return new_sensor  # Devuelve el objeto de sensor creado
-        else:
-            # Obtener el sensor seleccionado
-            sensor_asignado = self.dataFileSensors.search(id_sensor)
-            if sensor_asignado:
-                self.instanciaSensors.create(sensor_asignado)
-                return sensor_asignado  # Devuelve el objeto de sensor encontrado
+        self.readSensors(self.dataFileSensors)
+        while True:
+            id_sensor = int(input("ID del sensor que desea asignar (-1 para crear uno nuevo): "))
+
+            if id_sensor == -1:
+                # Crea un nuevo sensor
+                new_sensor = self.createSensor(sensors)
+                return new_sensor  # Devuelve el objeto de sensor creado
             else:
-                print("ID del sensor inválido.")
-                return None  # Devuelve None si no se encuentra el sensor
+                # Obtener el sensor seleccionado
+                sensor_asignado = self.dataFileSensors.search(id_sensor)
+                if sensor_asignado:
+                    self.instanciaSensors.create(sensor_asignado)
+                    return sensor_asignado  # Devuelve el objeto de sensor encontrado
+                else:
+                    print("ID del sensor inválido. Por favor, elija una opción válida.")
+                    continue
 
     def seleccionarActualizacion(self, current_sensor_id):
         self.readSensors()

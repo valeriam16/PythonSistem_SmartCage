@@ -1,5 +1,4 @@
 import os
-
 from Interfaces.CagesInterface import CagesInterface
 from Interfaces.SensorsInterface import SensorsInterface
 from Interfaces.UsersInterface import UsersInterface
@@ -7,8 +6,6 @@ from Logic.Cages import Cages
 from Logic.Sensors import Sensors
 from Logic.SensorsAssignedToCages import SensorsAssignedToCages
 from Logic.Users import Users
-
-
 #from Logic.ConexionMongoDB import ConexionMongoDB
 
 
@@ -46,40 +43,26 @@ class SensorsAssignedToCagesInterface:
         # Inicializar un conjunto para almacenar los ID utilizados
         self.used_ids = set(cage.ID for cage in self.instanciaSensorsAssigned.lista)
 
-    def seleccionarComoAgregar_PASADO(self, assigment=None):
-        self.readAssigment(self.dataFileSensorsAssigned)
-        id_sensor = int(input("ID de la asignación que desea seleccionar (-1 para crear uno nuevo): "))
-
-        if id_sensor == -1:
-            # Crea una nueva asignación
-            self.createAssignment(assigment)
-        else:
-            # Obtener la asignación seleccionado
-            asignacion_asignada = self.dataFileSensorsAssigned.search(id_sensor)
-            if asignacion_asignada:
-                self.instanciaSensorsAssigned.create(asignacion_asignada)
-            else:
-                print("ID del sensor inválido.")
-
-        return self.instanciaSensorsAssigned
-
     def seleccionarComoAgregar(self, assigment=None):
-        self.readAssigment(self.dataFileSensorsAssigned)
-        id_sensor = int(input("ID de la asignación que desea seleccionar (-1 para crear uno nuevo): "))
+        print("\n----------- Interfaz 'SensorsAssignedToCages' -----------\n")
 
-        if id_sensor == -1:
-            # Crea una nueva asignación
-            new_assigment = self.createAssignment(assigment)
-            return new_assigment  # Devuelve el objeto de asignación creado
-        else:
-            # Obtener la asignación seleccionada
-            asignacion_asignada = self.dataFileSensorsAssigned.search(id_sensor)
-            if asignacion_asignada:
-                self.instanciaSensorsAssigned.create(asignacion_asignada)
-                return asignacion_asignada  # Devuelve el objeto de asignación encontrado
+        self.readAssigment(self.dataFileSensorsAssigned)
+        while True:
+            id_sensor = int(input("ID de la asignación que desea seleccionar (-1 para crear uno nuevo): "))
+
+            if id_sensor == -1:
+                # Crea una nueva asignación
+                new_assigment = self.createAssignment(assigment)
+                return new_assigment  # Devuelve el objeto de asignación creado
             else:
-                print("ID de asignación inválido.")
-                return None  # Devuelve None si no se encuentra la asignación
+                # Obtener la asignación seleccionada
+                asignacion_asignada = self.dataFileSensorsAssigned.search(id_sensor)
+                if asignacion_asignada:
+                    self.instanciaSensorsAssigned.create(asignacion_asignada)
+                    return asignacion_asignada  # Devuelve el objeto de asignación encontrado
+                else:
+                    print("ID de asignación inválido. Por favor, elija una opción válida.")
+                    continue
 
     def seleccionarActualizacion(self, current_sensorAssigment_id):
         self.readAssigment()
@@ -104,17 +87,17 @@ class SensorsAssignedToCagesInterface:
 
         NumberSensor = int(input("Número de sensor: "))
 
-        # Obtener el objeto de JAULA y usar su ID
-        cageInstance = CagesInterface(Cages())
-        selected_cage = cageInstance.seleccionarComoAgregar()
-        CageID = selected_cage.ID if selected_cage else None
-
         # Obtener el objeto de USUARIO y usar su ID
         usersInstance = UsersInterface(Users())
         selected_user = usersInstance.seleccionarComoAgregar()
         UserID = selected_user.ID if selected_user else None
 
-        SensorAssigned = SensorsAssignedToCages(ID, SensorID, NumberSensor, CageID, UserID)
+        # Obtener el objeto de JAULA y usar su ID
+        cageInstance = CagesInterface(Cages())
+        selected_cage = cageInstance.seleccionarComoAgregar()
+        CageID = selected_cage.ID if selected_cage else None
+
+        SensorAssigned = SensorsAssignedToCages(ID, SensorID, NumberSensor, UserID, CageID)
         res = assigment.create(SensorAssigned)
 
         if res == 1:
@@ -174,20 +157,7 @@ class SensorsAssignedToCagesInterface:
                     interfazUsers = SensorsInterface()
                     SensorID = interfazUsers.seleccionarActualizacion(asignacionAActualizar.SensorID)
 
-                NumberSensor = int(input("Nuevo número de sensor (deje vacío para mantener el actual): "))
-                # CageID = input("Nuevo ID de la jaula a la que se asigno el sensor (deje vacío para mantener el actual): ")
-
-                # Preguntar al usuario si desea mantener el CageID actual o actualizarlo
-                respuesta = input("¿Desea mantener el CageID actual? (Sí/No): ").lower()
-                if respuesta == "sí" or respuesta == "si":
-                    # Mantener el CageID actual
-                    CageID = asignacionAActualizar.CageID
-                else:
-                    # Actualizar el CageID
-                    interfazCages = CagesInterface()
-                    CageID = interfazCages.seleccionarActualizacion(asignacionAActualizar.CageID)
-
-                # UserID = input("Nuevo ID del usuario al que le pertenece esa jaula (deje vacío para mantener el actual): ")
+                NumberSensor = input("Nuevo número de sensor (deje vacío para mantener el actual): ")
 
                 # Preguntar al usuario si desea mantener el UserID actual o actualizarlo
                 respuesta = input("¿Desea mantener el UserID actual? (Sí/No): ").lower()
@@ -199,23 +169,33 @@ class SensorsAssignedToCagesInterface:
                     interfazUsers = UsersInterface()
                     UserID = interfazUsers.seleccionarActualizacion(asignacionAActualizar.UserID)
 
+                # Preguntar al usuario si desea mantener el CageID actual o actualizarlo
+                respuesta = input("¿Desea mantener el CageID actual? (Sí/No): ").lower()
+                if respuesta == "sí" or respuesta == "si":
+                    # Mantener el CageID actual
+                    CageID = asignacionAActualizar.CageID
+                else:
+                    # Actualizar el CageID
+                    interfazCages = CagesInterface()
+                    CageID = interfazCages.seleccionarActualizacion(asignacionAActualizar.CageID)
+
                 # Verificar si se ingresaron nuevos datos para la asignación
-                if SensorID or NumberSensor or CageID or UserID:
+                if SensorID or NumberSensor or UserID or CageID:
                     # Si se proporcionan nuevos datos, crear un objeto SensorsAssignedToCages con ellos
                     SensorAssigned = SensorsAssignedToCages(
                         asignacionAActualizar.ID,
                         SensorID,
                         NumberSensor or asignacionAActualizar.NumberSensor,
-                        CageID,
-                        UserID
+                        UserID,
+                        CageID
                     )
 
                     # Intentar actualizar la asignación con los nuevos datos
                     res = assigment.update(id, SensorAssigned)
                     if res == 1:
                         print("Se ha actualizado la asignación de un sensor correctamente.")
-                        # if not self.guardarInJson:
-                            # self.instancia.update(id, obj)
+                        if not self.guardarInJson:
+                            self.instancia.update(id, SensorAssigned)
                         self.guardarEnJSON()
                         # SE ACTUALIZA EN LA COLECCIÓN CORRESPONDIENTE
                         # query = {"Nombre": funcionAActualizar.nombre}

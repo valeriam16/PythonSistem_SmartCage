@@ -1,5 +1,4 @@
 import os
-
 from Interfaces.CagesInterface import CagesInterface
 from Interfaces.UsersInterface import UsersInterface
 from Logic.Cages import Cages
@@ -41,23 +40,6 @@ class UserCagesInterface:
 
         # Inicializar un conjunto para almacenar los ID utilizados
         self.used_ids = set(cage.ID for cage in self.instanciaUserCages.lista)
-
-    def seleccionarComoAgregar(self, userAssigment=None):
-        self.readUserAssignment(self.dataFileUserCages)
-        id_sensor = int(input("ID de la asignación que desea seleccionar (-1 para crear uno nuevo): "))
-
-        if id_sensor == -1:
-            # Crea una nueva asignación
-            self.createUserAssignment(userAssigment)
-        else:
-            # Obtener la asignación seleccionado
-            asignacion_asignada = self.dataFileUserCages.search(id_sensor)
-            if asignacion_asignada:
-                self.instanciaUserCages.create(asignacion_asignada)
-            else:
-                print("ID del sensor inválido.")
-
-        return self.instanciaUserCages
 
     def createUserAssignment(self, userAssigment=None):
         if userAssigment is None:
@@ -109,74 +91,6 @@ class UserCagesInterface:
             for obj in userAssigment.lista:
                 print(f"{obj}")
 
-    def updateUserAssigment_PASADO(self, userAssigment=None):
-        if userAssigment is None:
-            userAssigment = self.instanciaUserCages
-
-        if os.path.getsize("../JSON/UsersCages.json") == 0:
-            print("No hay asignaciones actualmente.")
-        else:
-            self.readUserAssignment(userAssigment)  # Ahora mostrará las asignaciones proporcionados en lugar de los internos
-
-            id = int(input("ID de la asignación que desea actualizar: "))
-            asignacionAActualizar = userAssigment.search(id)
-
-            if asignacionAActualizar:
-                print(f"\nDatos actuales de la asignación a actualizar:")
-                print(userAssigment.encabezados())
-                print(f"{asignacionAActualizar}")
-
-                # Solicitar los nuevos datos para el sensor
-                ID = input("Nuevo ID de la asignación (deje vacío para mantener el actual): ")
-
-                # Preguntar al usuario si desea mantener el CageID actual o actualizarlo
-                respuesta = input("¿Desea mantener el CageID actual? (Sí/No): ").lower()
-                if respuesta == "sí" or respuesta == "si":
-                    # Mantener el CageID actual
-                    CageID = asignacionAActualizar.CageID
-                else:
-                    # Actualizar el CageID
-                    interfazCages = CagesInterface()
-                    CageID = interfazCages.seleccionarActualizacion(asignacionAActualizar.CageID)
-
-                # Preguntar al usuario si desea mantener el UserID actual o actualizarlo
-                respuesta2 = input("¿Desea mantener el UserID actual? (Sí/No): ").lower()
-                if respuesta2 == "sí" or respuesta2 == "si":
-                    # Mantener el UserID actual
-                    UserID = asignacionAActualizar.UserID
-                else:
-                    # Actualizar el UserID
-                    interfazUsers = UsersInterface()
-                    UserID = interfazUsers.seleccionarActualizacion(asignacionAActualizar.UserID)
-
-                # Verificar si se ingresaron nuevos datos para la asignación
-                if ID or CageID or UserID:
-                    # Si se proporcionan nuevos datos, crear un objeto UserCages con ellos
-                    UserCage = UsersCages(
-                        ID or asignacionAActualizar.ID,
-                        CageID,
-                        UserID
-                    )
-
-                    # Intentar actualizar la asignación con los nuevos datos
-                    res = userAssigment.update(id, UserCage)
-                    if res == 1:
-                        print("Se ha actualizado la asignación de la caja a un usuario correctamente.")
-                        # if not self.guardarInJson:
-                            # self.instancia.update(id, obj)
-                        self.guardarEnJSON()
-                        # SE ACTUALIZA EN LA COLECCIÓN CORRESPONDIENTE
-                        # query = {"Nombre": funcionAActualizar.nombre}
-                        # self.mongodb_connection.update_document(query, obj.diccionario())
-                        # print("Se ha actualizado en MongoDB")
-                        return userAssigment
-                    else:
-                        print("Hubo un error al actualizar la asignación.")
-                else:
-                    print("No se proporcionaron nuevos datos. La asignación permanece sin cambios.")
-            else:
-                print("ID de la asignación inválido.")
-
     def updateUserAssigment(self, userAssigment=None):
         if userAssigment is None:
             userAssigment = self.instanciaUserCages
@@ -195,7 +109,6 @@ class UserCagesInterface:
                 print(f"{asignacionAActualizar}")
 
                 # Solicitar los nuevos datos para la asignación
-                # ID = input("Nuevo ID de la asignación (deje vacío para mantener el actual): ")
 
                 # Preguntar al usuario si desea mantener el UserID actual o actualizarlo
                 respuesta = input("¿Desea mantener el UserID actual? (Sí/No): ").lower()

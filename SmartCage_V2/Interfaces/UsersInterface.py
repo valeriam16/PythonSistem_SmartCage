@@ -37,48 +37,51 @@ class UsersInterface:
         # Inicializar un conjunto para almacenar los ID utilizados
         self.used_ids = set(cage.ID for cage in self.instanciaUser.lista)
 
-    def seleccionarComoAgregar_PASADO(self, users=None):
-        self.readUsers(self.dataFileUser)
-        id_user = int(input("ID del usuario que desea asignar (-1 para crear uno nuevo): "))
-
-        if id_user == -1:
-            # Crea un nuevo usuario
-            self.createUser(users)
-        else:
-            # Obtener el usuario seleccionado
-            usuario_asignado = self.dataFileUser.search(id_user)
-            if usuario_asignado:
-                self.instanciaUser.create(usuario_asignado)
-            else:
-                print("ID del usuario inválido.")
-
-        return self.instanciaUser
-
     def seleccionarComoAgregar(self, users=None):
+        print("\n----------- Interfaz 'Users' -----------\n")
+
         self.readUsers(self.dataFileUser)
-        id_user = int(input("ID del usuario que desea asignar (-1 para crear uno nuevo): "))
-
-        if id_user == -1:
-            # Crea un nuevo usuario
-            new_user = self.createUser(users)
-            return new_user  # Devuelve el objeto de usuario creado
-        else:
-            # Obtener el usuario seleccionado
-            usuario_asignado = self.dataFileUser.search(id_user)
-            if usuario_asignado:
-                self.instanciaUser.create(usuario_asignado)
-                return usuario_asignado  # Devuelve el objeto de usuario encontrado
+        while True:
+            id_user = input("ID del usuario que desea asignar (-1 para crear uno nuevo): ")
+            if id_user == "-1":
+                # Crea un nuevo usuario
+                new_user = self.createUser(users)
+                return new_user  # Devuelve el objeto de usuario creado
             else:
-                print("ID del usuario inválido.")
-                return None  # Devuelve None si no se encuentra el usuario
+                # Obtener el usuario seleccionado
+                usuario_asignado = self.dataFileUser.search(int(id_user))
+                if usuario_asignado:
+                    self.instanciaUser.create(usuario_asignado)
+                    return usuario_asignado  # Devuelve el objeto de usuario encontrado
+                else:
+                    print("ID del usuario inválido. Por favor, elija una opción válida.")
+                    continue
 
-    def seleccionarActualizacion(self, current_user_id):
+    def seleccionarActualizacion_PASADO(self, current_user_id):
         self.readUsers()  # Asume que tienes un método para mostrar los usuarios disponibles
         nuevo_userID = int(input("Selecciona un UserID nuevo: "))
         if nuevo_userID == current_user_id:
             return current_user_id
         else:
             return nuevo_userID
+
+    def seleccionarActualizacion(self, current_user_id):
+        self.readUsers()
+        while True:
+            nuevo_userID = input("Selecciona un UserID nuevo: ")
+
+            if nuevo_userID.isdigit():
+                nuevo_userID = int(nuevo_userID)
+                if nuevo_userID == current_user_id:
+                    return current_user_id
+                else:
+                    new_id = self.instanciaUser.search(nuevo_userID)
+                    if new_id:
+                        return nuevo_userID
+                    else:
+                        print("ID del usuario inválido. Por favor, elija una opción válida.")
+            else:
+                print("Por favor, ingresa un ID válido (número entero).")
 
     def createUser(self, users=None):
         if users is None:
