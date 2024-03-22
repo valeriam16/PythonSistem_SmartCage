@@ -19,5 +19,19 @@
     "User": "Jona21",
     "Email": "jona@gmail.com",
     "Password": "jona1234"
+  },
+  {
+    "ID": 4,
+    "Name": "Miriam Moreno",
+    "User": "miriam",
+    "Email": "miriam@gmail.com",
+    "Password": "miriam1234"
+  },
+  {
+    "ID": 5,
+    "Name": "Cesar Chavez",
+    "User": "cesar",
+    "Email": "cesar@gmail.com",
+    "Password": "cesar1234"
   }
 ]

@@ -32,7 +32,7 @@ class SensorsInterface:
 
             self.guardarInJson=True
 
-    def seleccionarComoAgregar(self, sensors=None):
+    def seleccionarComoAgregar_PASADO(self, sensors=None):
         self.readSensors(self.dataFileSensors)
         id_sensor = int(input("ID del sensor que desea seleccionar (-1 para crear uno nuevo): "))
 
@@ -49,11 +49,37 @@ class SensorsInterface:
 
         return self.instanciaSensors
 
+    def seleccionarComoAgregar(self, sensors=None):
+        self.readSensors(self.dataFileSensors)
+        id_sensor = int(input("ID del sensor que desea asignar (-1 para crear uno nuevo): "))
+
+        if id_sensor == -1:
+            # Crea un nuevo sensor
+            new_sensor = self.createSensor(sensors)
+            return new_sensor  # Devuelve el objeto de sensor creado
+        else:
+            # Obtener el sensor seleccionado
+            sensor_asignado = self.dataFileSensors.search(id_sensor)
+            if sensor_asignado:
+                self.instanciaSensors.create(sensor_asignado)
+                return sensor_asignado  # Devuelve el objeto de sensor encontrado
+            else:
+                print("ID del sensor inválido.")
+                return None  # Devuelve None si no se encuentra el sensor
+
+    def seleccionarActualizacion(self, current_sensor_id):
+        self.readSensors()
+        nuevo_sensorID = int(input("Selecciona un SensorID nuevo: "))
+        if nuevo_sensorID == current_sensor_id:
+            return current_sensor_id
+        else:
+            return nuevo_sensorID
+
     def createSensor(self, sensors=None):
         if sensors is None:
             sensors = self.instanciaSensors
 
-        ID = input("ID del sensor: ")
+        ID = int(input("ID del sensor: "))
         type = input("Tipo de sensor: ")
         name = input("Nombre del sensor: ")
         unit = input("Unidad en que tomará las medidas el sensor: ")
@@ -63,8 +89,9 @@ class SensorsInterface:
 
         if res == 1:
             print("Se ha creado el sensor correctamente.")
-            #if self.guardarInJson == False:
-                #self.instancia.create(sensor)
+            # Este if sirve para cuando se está creando algo desde una interfaz externa
+            if self.guardarInJson == False:
+                self.instancia.create(sensor)
             self.guardarEnJSON()
             # SE GUARDA EN LA COLECCIÓN CORRESPONDIENTE
             #self.mongodb_connection.insert_document(obj.diccionario())

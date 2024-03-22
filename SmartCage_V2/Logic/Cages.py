@@ -18,7 +18,7 @@ class Cages(Lista):
             return datos
         else:
             return {
-                'ID': self.ID
+                'ID': int(self.ID)
             }
 
     def guardar(self, diccionario):

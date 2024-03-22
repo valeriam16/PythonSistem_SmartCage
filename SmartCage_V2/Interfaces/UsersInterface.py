@@ -34,7 +34,7 @@ class UsersInterface:
             self.instancia = self.instanciaUser
             self.guardarInJson=True
 
-    def seleccionarComoAgregar(self, users=None):
+    def seleccionarComoAgregar_PASADO(self, users=None):
         self.readUsers(self.dataFileUser)
         id_user = int(input("ID del usuario que desea asignar (-1 para crear uno nuevo): "))
 
@@ -51,11 +51,37 @@ class UsersInterface:
 
         return self.instanciaUser
 
+    def seleccionarComoAgregar(self, users=None):
+        self.readUsers(self.dataFileUser)
+        id_user = int(input("ID del usuario que desea asignar (-1 para crear uno nuevo): "))
+
+        if id_user == -1:
+            # Crea un nuevo usuario
+            new_user = self.createUser(users)
+            return new_user  # Devuelve el objeto de usuario creado
+        else:
+            # Obtener el usuario seleccionado
+            usuario_asignado = self.dataFileUser.search(id_user)
+            if usuario_asignado:
+                self.instanciaUser.create(usuario_asignado)
+                return usuario_asignado  # Devuelve el objeto de usuario encontrado
+            else:
+                print("ID del usuario inválido.")
+                return None  # Devuelve None si no se encuentra el usuario
+
+    def seleccionarActualizacion(self, current_user_id):
+        self.readUsers()  # Asume que tienes un método para mostrar los usuarios disponibles
+        nuevo_userID = int(input("Selecciona un UserID nuevo: "))
+        if nuevo_userID == current_user_id:
+            return current_user_id
+        else:
+            return nuevo_userID
+
     def createUser(self, users=None):
         if users is None:
             users = self.instanciaUser
 
-        userID = input("ID del usuario: ")
+        userID = int(input("ID del usuario: "))
         name = input("Nombre: ")
         user = input("User: ")
         email = input("Email: ")
@@ -65,8 +91,9 @@ class UsersInterface:
 
         if res == 1:
             print("Se ha creado el usuario correctamente.")
-            #if self.guardarInJson == False:
-                #self.instancia.create(sensor)
+            # Este if sirve para cuando se está creando algo desde una interfaz externa
+            if self.guardarInJson == False:
+                self.instancia.create(user)
             self.guardarEnJSON()
             # SE GUARDA EN LA COLECCIÓN CORRESPONDIENTE
             #self.mongodb_connection.insert_document(obj.diccionario())
@@ -176,8 +203,8 @@ class UsersInterface:
             self.instancia.guardar(diccionario_obj)
 
     def interfaz(self):
-        print("\n-------------USUARIOS-----------")
         while True:
+            print("\n----------- Usuarios -----------")
             print("\nSeleccione qué desea realizar:")
             print("1. Crear")
             print("2. Mostrar")
@@ -203,6 +230,5 @@ class UsersInterface:
 
 
 if __name__ == "__main__":
-    instancia = UsersInterface() # Forma 1
-    # interfazFuncionesInstancia = InterfazFunciones_V2(Funciones()) #Forma 2 (Se va a comportar como una lista)
+    instancia = UsersInterface()
     instancia.interfaz()

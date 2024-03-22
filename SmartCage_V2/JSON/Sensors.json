@@ -1,20 +1,20 @@
 [
   {
-    "ID": "1",
+    "ID": 1,
     "Type": "Temperatura",
     "Name": "TM",
     "Unit": "°C",
-    "Description": "blablabla"
+    "Description": "Medirá la temperatura dentro de la jaula de la mascota.  "
   },
   {
-    "ID": "2",
+    "ID": 2,
     "Type": "Ultrasónico",
     "Name": "US",
     "Unit": "cm",
     "Description": "Se decidirá si cerrar o abrir la puerta de la jaula."
   },
   {
-    "ID": "3",
+    "ID": 3,
     "Type": "Sonido",
     "Name": "SN",
     "Unit": "booleano",

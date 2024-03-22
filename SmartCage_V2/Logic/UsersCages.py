@@ -1,12 +1,12 @@
 import json
-from Lista import Lista
+from Logic.Lista import Lista
 
 
 class UsersCages(Lista):
-    def __init__(self, UsersCagesID=None, UserID=None, CageID=None):
+    def __init__(self, ID=None, UserID=None, CageID=None):
         super().__init__()
-        if UsersCagesID is not None and UserID is not None and CageID is not None:
-            self.UsersCagesID = UsersCagesID
+        if ID is not None and UserID is not None and CageID is not None:
+            self.ID = ID
             self.UserID = UserID
             self.CageID = CageID
             self.lista = []
@@ -20,17 +20,17 @@ class UsersCages(Lista):
             return datos
         else:
             return {
-                'UserCagesID': self.UsersCagesID,
-                'UserID': self.UserID,
-                'CageID': self.CageID
+                'ID': int(self.ID),
+                'UserID': int(self.UserID),
+                'CageID': int(self.CageID)
             }
 
     def guardar(self, diccionario):
-        with open('user_cages.json', 'w', encoding='utf-8') as user_cages_json:
+        with open('../JSON/UsersCages.json', 'w', encoding='utf-8') as user_cages_json:
             json.dump(diccionario, user_cages_json, indent=2, ensure_ascii=False)
 
     def recuperarDatos(self):
-        with open('user_cages.json', 'r', encoding='utf-8') as user_cages_json:
+        with open('../JSON/UsersCages.json', 'r', encoding='utf-8') as user_cages_json:
             datos = json.load(user_cages_json)
             return datos
 
@@ -38,9 +38,9 @@ class UsersCages(Lista):
         self.lista = []
         for user_cages_data in datos:
             user_cage = UsersCages(
-                user_cages_data['UserCagesID'],
+                user_cages_data['ID'],
                 user_cages_data['UserID'],
-                user_cages_data['CagesID']
+                user_cages_data['CageID']
             )
             self.create(user_cage)
         return self
@@ -49,7 +49,8 @@ class UsersCages(Lista):
         self.convertirAObjeto(self.recuperarDatos())
 
     def encabezados(self):
-        return f"{'UserCageID'.rjust(25)} {'UserID'.rjust(10)} {'CageID'.rjust(5)}"
+        return f"{'UserCageID'.rjust(1)} {'UserID'.rjust(10)} {'CageID'.rjust(10)}"
 
     def __str__(self):
-        return f"{str(self.UsersCagesID).rjust(25)} {str(self.UserID).rjust(10)} {str(self.CageID).rjust(5)}"
+        return f"{str(self.ID).rjust(5)} {str(self.UserID).rjust(12)} {str(self.CageID).rjust(10)}"
+

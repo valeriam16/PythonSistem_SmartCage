@@ -36,33 +36,44 @@ class CagesInterface:
 
     def seleccionarComoAgregar(self, cages=None):
         self.readCages(self.dataFileCage)
-        id_jaula = int(input("ID de la jaula que desea asignar (-1 para crear uno nueva): "))
+        id_cage = int(input("ID de la jaula que desea asignar (-1 para crear uno nuevo): "))
 
-        if id_jaula == -1:
+        if id_cage == -1:
             # Crea una nueva jaula
-            self.createCage(cages)
+            new_cage = self.createCage(cages)
+            return new_cage  # Devuelve el objeto de jaula creado
         else:
             # Obtener la jaula seleccionado
-            jaula_asignada = self.dataFileCage.search(id_jaula)
+            jaula_asignada = self.dataFileCage.search(id_cage)
             if jaula_asignada:
                 self.instanciaCage.create(jaula_asignada)
+                return jaula_asignada  # Devuelve el objeto de jaula encontrado
             else:
                 print("ID de la jaula inválido.")
+                #self.seleccionarComoAgregar()
+                return None  # Devuelve None si no se encuentra la jaula
 
-        return self.instanciaCage
+    def seleccionarActualizacion(self, current_cage_id):
+        self.readCages()
+        nuevo_cageID = int(input("Selecciona un CageID nuevo: "))
+        if nuevo_cageID == current_cage_id:
+            return current_cage_id
+        else:
+            return nuevo_cageID
 
     def createCage(self, cages=None):
         if cages is None:
             cages = self.instanciaCage
 
-        ID = input("ID de la jaula: ")
+        ID = int(input("ID de la jaula: "))
         cage = Cages(ID)
         res = cages.create(cage)
 
         if res == 1:
             print("Se ha creado la jaula correctamente.")
-            #if self.guardarInJson == False:
-                #self.instancia.create(sensor)
+            # Este if sirve para cuando se está creando algo desde una interfaz externa
+            if self.guardarInJson == False:
+                self.instancia.create(cage)
             self.guardarEnJSON()
             # SE GUARDA EN LA COLECCIÓN CORRESPONDIENTE
             #self.mongodb_connection.insert_document(obj.diccionario())

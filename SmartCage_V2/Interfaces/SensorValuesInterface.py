@@ -1,5 +1,7 @@
 import os
+from Interfaces.SensorsAssignedToCagesInterface import SensorsAssignedToCagesInterface
 from Logic.SensorValues import SensorValues
+from Logic.SensorsAssignedToCages import SensorsAssignedToCages
 #from Logic.ConexionMongoDB import ConexionMongoDB
 
 
@@ -16,7 +18,8 @@ class SensorValuesInterface:
             if os.path.exists("../JSON/SensorValues.json") and os.path.getsize("../JSON/SensorValues.json") > 0:
                 self.dataFileSensorValues.cargar() # Aquí guardamos los datos del JSON en la lista[]
             else:
-                print("No hay valores tomados de los sensores actualmente.")
+                pass
+                #print("No hay valores tomados de los sensores actualmente.")
 
             self.instancia = self.dataFileSensorValues
             self.guardarInJson=False
@@ -27,42 +30,30 @@ class SensorValuesInterface:
             if os.path.exists("../JSON/SensorValues.json") and os.path.getsize("../JSON/SensorValues.json") > 0:
                 self.instanciaSensorValues.cargar()
             else:
-                print("No hay valores tomados de los sensores actualmente.")
+                pass
+                #print("No hay valores tomados de los sensores actualmente.")
+
             self.instancia = self.instanciaSensorValues
-
             self.guardarInJson=True
-
-    def seleccionarComoAgregar(self, sensorValues=None):
-        self.readSensorValue(self.dataFileSensorValues)
-        id_sensor = int(input("ID del valor que desea seleccionar (-1 para crear uno nuevo): "))
-
-        if id_sensor == -1:
-            # Crea un nuevo valor
-            self.createSensorValue(sensorValues)
-        else:
-            # Obtener el valor seleccionado
-            valor_asignado = self.dataFileSensorValues.search(id_sensor)
-            if valor_asignado:
-                self.instanciaSensorValues.create(valor_asignado)
-            else:
-                print("ID del valor inválido.")
-
-        return self.instanciaSensorValues
 
     def createSensorValue(self, sensorValues=None):
         if sensorValues is None:
             sensorValues = self.instanciaSensorValues
 
-        ValueID = input("ID del valor tomado: ")
-        SensorID = input("ID del sensor que está tomando el valor: ")
-        Value = input("Valor tomado por el sensor: ")
-        SensorValue = SensorValues(ValueID, SensorID, Value)
+        ID = int(input("ID del valor tomado: "))
+
+        # Obtener el objeto de SENSOR_CAGE y usar su ID
+        sensorAssignedInstance = SensorsAssignedToCagesInterface(SensorsAssignedToCages())
+        selected_sensorAssigned = sensorAssignedInstance.seleccionarComoAgregar()
+        SensorAssignedToCageID = selected_sensorAssigned.ID if selected_sensorAssigned else None
+
+        Value = float(input("Valor tomado por el sensor: "))
+
+        SensorValue = SensorValues(ID, SensorAssignedToCageID, Value)
         res = sensorValues.create(SensorValue)
 
         if res == 1:
             print("Se ha guardado el valor correctamente.")
-            #if self.guardarInJson == False:
-                #self.instancia.create(sensor)
             self.guardarEnJSON()
             # SE GUARDA EN LA COLECCIÓN CORRESPONDIENTE
             #self.mongodb_connection.insert_document(obj.diccionario())
@@ -82,8 +73,6 @@ class SensorValuesInterface:
             print(sensorValues.encabezados())
             for obj in sensorValues.lista:
                 print(f"{obj}")
-            #for i, obj in enumerate(sensors.read()):
-                #print(f"{i}. {obj}")
 
     def updateSensorValue(self, sensorValues=None):
         if sensorValues is None:
@@ -103,16 +92,27 @@ class SensorValuesInterface:
                 print(f"{valorAActualizar}")
 
                 # Solicitar los nuevos datos para el valor
-                ValueID = input("Nuevo ID del valor (deje vacío para mantener el actual): ")
-                SensorID = input("Nuevo ID del sensor que tomó el valor (deje vacío para mantener el actual): ")
+                ID = input("Nuevo ID del valor (deje vacío para mantener el actual): ")
+                # SensorID = input("Nuevo ID del sensor que tomó el valor (deje vacío para mantener el actual): ")
+
+                # Preguntar al usuario si desea mantener el SensorAssignedToCageID actual o actualizarlo
+                respuesta = input("¿Desea mantener el SensorAssignedToCageID actual? (Sí/No): ").lower()
+                if respuesta == "sí" or respuesta == "si":
+                    # Mantener el SensorAssignedToCageID actual
+                    SensorAssignedToCageID = valorAActualizar.SensorID
+                else:
+                    # Actualizar el SensorAssignedToCageID
+                    interfazSensorAssigned = SensorsAssignedToCagesInterface()
+                    SensorAssignedToCageID = interfazSensorAssigned.seleccionarActualizacion(valorAActualizar.SensorAssignedToCageID)
+
                 Value = input("Nuevo valor que tomó el sensor (deje vacío para mantener el actual): ")
 
                 # Verificar si se ingresaron nuevos datos para el valor
-                if ValueID or SensorID or Value:
+                if ID or SensorAssignedToCageID or Value:
                     # Si se proporcionan nuevos datos, crear un objeto UserCages con ellos
                     SensorValue = SensorValues(
-                        ValueID or valorAActualizar.ValueID,
-                        SensorID or valorAActualizar.SensorID,
+                        ID or valorAActualizar.ID,
+                        SensorAssignedToCageID,
                         Value or valorAActualizar.Value
                     )
 
@@ -120,8 +120,6 @@ class SensorValuesInterface:
                     res = sensorValues.update(id, SensorValue)
                     if res == 1:
                         print("Se ha actualizado el valor correctamente.")
-                        # if not self.guardarInJson:
-                            # self.instancia.update(id, obj)
                         self.guardarEnJSON()
                         # SE ACTUALIZA EN LA COLECCIÓN CORRESPONDIENTE
                         # query = {"Nombre": funcionAActualizar.nombre}
@@ -170,7 +168,7 @@ class SensorValuesInterface:
             self.instancia.guardar(diccionario_obj)
 
     def interfaz(self):
-        print("\n-------------VALORES TOMADOS POR LOS SENSORES-----------")
+        print("\n----------- Valores tomados por los sensores  -----------")
         while True:
             print("\nSeleccione qué desea realizar:")
             print("1. Crear")
@@ -197,6 +195,5 @@ class SensorValuesInterface:
 
 
 if __name__ == "__main__":
-    interfazValoresInstancia = SensorValuesInterface() # Forma 1
-    # interfazFuncionesInstancia = InterfazFunciones_V2(Funciones()) #Forma 2 (Se va a comportar como una lista)
-    interfazValoresInstancia.interfaz()
+    instancia = SensorValuesInterface()
+    instancia.interfaz()

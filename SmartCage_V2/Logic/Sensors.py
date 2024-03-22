@@ -22,7 +22,7 @@ class Sensors(Lista):
             return datos
         else:
             return {
-                'ID': self.ID,
+                'ID': int(self.ID),
                 'Type': self.Type,
                 'Name': self.Name,
                 'Unit': self.Unit,
@@ -58,4 +58,4 @@ class Sensors(Lista):
         return f"{'ID'.rjust(1)} \t\t\t {'Type'.rjust(5)} \t\t\t {'Name'.rjust(13)}\t\t {'Unit'.rjust(8)} \t\t\t {'Description'.rjust(5)}"
 
     def __str__(self):
-        return f"{self.ID.rjust(1)} \t\t\t  {self.Type.rjust(10)} \t\t\t  {self.Name.rjust(1)}\t\t\t {self.Unit.rjust(1)} \t\t\t {self.Description.rjust(10)} \t\t\t"
+        return f"{str(self.ID).rjust(1)} \t\t\t  {self.Type.rjust(10)} \t\t\t  {self.Name.rjust(1)}\t\t\t {self.Unit.rjust(1)} \t\t\t {self.Description.rjust(10)} \t\t\t"

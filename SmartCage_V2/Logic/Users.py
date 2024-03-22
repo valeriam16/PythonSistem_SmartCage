@@ -22,7 +22,7 @@ class Users(Lista):
             return datos
         else:
             return {
-                'ID': self.ID,
+                'ID': int(self.ID),
                 'Name': self.Name,
                 'User': self.User,
                 'Email': self.Email,
